@@ -93,7 +93,22 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert("Error! Unsuccessful fetch");
             }
             return response.json();
-        })
+        });
+    }
+
+    function apiDeleteOperation(operationId) {
+        return fetch(apiHost + "/api/operations/" + operationId,
+            {
+                method: "DELETE",
+                headers: {
+                    "Authorization": apiKey
+                }
+            }).then(function (response) {
+            if (!response.ok) {
+                alert("Error! Unsuccessful fetch");
+            }
+            return response.json();
+        });
     }
 
     function renderOperation(operationsList, status, operationId, operationDescription, timeSpent) {
@@ -142,6 +157,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 apiUpdateOperation(operationId, operationDescription, timeSpent + 60).then(function(response){
                     time.innerText = convertTime(response.data.timeSpent);
                     timeSpent = response.data.timeSpent;
+                });
+            });
+
+            deleteTaskBtn.addEventListener("click", function() {
+                apiDeleteOperation(operationId).then(function(response){
+                    listElem.remove();
                 });
             });
         }
