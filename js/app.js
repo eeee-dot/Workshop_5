@@ -284,6 +284,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 event.preventDefault();
                 apiCreateOperationForTask(taskId, descriptionInput.value).then(function (response) {
                     renderOperation(taskList, status, response.data.id, response.data.description, response.data.timeSpent);
+                    descriptionInput.value = "";
                 });
             });
         }
@@ -309,9 +310,14 @@ document.addEventListener("DOMContentLoaded", function () {
         const description = inputs[1].value;
 
         apiCreateTask(title, description).then(function (response) {
+
             const taskData = response.data;
             renderTask(taskData.id, taskData.title, taskData.description, taskData.status);
         });
+
+        inputs[0].value = "";
+        inputs[1].value = "";
+
     });
 
 
