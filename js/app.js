@@ -111,6 +111,23 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    function apiUpdateTask(taskId, title, description, status) {
+        return fetch(apiHost + "/api/tasks/" + taskId,
+            {
+                method: "PUT",
+                headers: {
+                    "Authorization": apiKey,
+                    "Content-Type": "application/json"
+                },
+            body: JSON.stringify({title: title, description: description, status: status})
+        }).then(function (response) {
+            if (!response.ok) {
+                alert("Error! Unsuccessful fetch");
+            }
+            return response.json();
+        });
+    }
+
     function renderOperation(operationsList, status, operationId, operationDescription, timeSpent) {
         const listElem = document.createElement("li");
         listElem.className = "list-group-item d-flex justify-content-between align-items-center";
@@ -146,22 +163,22 @@ document.addEventListener("DOMContentLoaded", function () {
             deleteTaskBtn.innerText = "Delete";
             rightDescDiv.appendChild(deleteTaskBtn);
 
-            minBtn.addEventListener("click", function(){
-                apiUpdateOperation(operationId, operationDescription, timeSpent + 15).then(function(response){
+            minBtn.addEventListener("click", function () {
+                apiUpdateOperation(operationId, operationDescription, timeSpent + 15).then(function (response) {
                     time.innerText = convertTime(response.data.timeSpent);
                     timeSpent = response.data.timeSpent;
                 });
             });
 
-            hourBtn.addEventListener("click", function(){
-                apiUpdateOperation(operationId, operationDescription, timeSpent + 60).then(function(response){
+            hourBtn.addEventListener("click", function () {
+                apiUpdateOperation(operationId, operationDescription, timeSpent + 60).then(function (response) {
                     time.innerText = convertTime(response.data.timeSpent);
                     timeSpent = response.data.timeSpent;
                 });
             });
 
-            deleteTaskBtn.addEventListener("click", function() {
-                apiDeleteOperation(operationId).then(function(response){
+            deleteTaskBtn.addEventListener("click", function () {
+                apiDeleteOperation(operationId).then(function (response) {
                     listElem.remove();
                 });
             });
@@ -211,6 +228,13 @@ document.addEventListener("DOMContentLoaded", function () {
             finishBtn.className = "btn btn-dark btn-sm js-task-open-only";
             finishBtn.innerText = "Finish";
             headerRightDiv.appendChild(finishBtn);
+
+            finishBtn.addEventListener("click", function (){
+                apiUpdateTask(taskId, title, description, "closed");
+                section.querySelectorAll(".js-task-open-only").forEach(function(element){
+                    element.parentElement.removeChild(element);
+                })
+            })
         }
 
         const deleteBtn = document.createElement("button");
@@ -258,7 +282,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             form.addEventListener("submit", function (event) {
                 event.preventDefault();
-                apiCreateOperationForTask(taskId, descriptionInput.value).then(function (response){
+                apiCreateOperationForTask(taskId, descriptionInput.value).then(function (response) {
                     renderOperation(taskList, status, response.data.id, response.data.description, response.data.timeSpent);
                 });
             });
